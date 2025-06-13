@@ -146,11 +146,19 @@ public class ClienteController {
     }
 
     //exportar pdf
-    @NotNull
-    public ResponseEntity<Resource> exportPdf(@RequestParam Long idCliente, @RequestParam Long idOrden) {
-       // Optional<Cliente> cliente = clienteService.findById(idCliente);
-        //return this.clienteService.findById(idCliente);
-        return null;
+    /*@GetMapping("/cliente/exportpdf/{id}")
+    public ResponseEntity<Resource> exporClentetPdf(@RequestParam Long idCliente) {
+        return (ResponseEntity<Resource>) clienteService.exportarClientePdf(idCliente);
+    }*/
+
+    @GetMapping("/cliente/exportpdf/{id}")
+    public ResponseEntity<Resource> exporClentetPdf(@PathVariable Long id) {
+        return clienteService.exportarClientePdf(id);
+    }
+
+    @GetMapping("/cliente/exportpdf2/{id}")
+    public ResponseEntity<Resource> exporClentetPdf2(@PathVariable Long id) {
+        return clienteService.exportarClientePdf2(id);
     }
 
 }

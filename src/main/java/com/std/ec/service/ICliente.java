@@ -22,5 +22,7 @@ public interface ICliente {
 
     boolean existsById(Long idCliente);
 
+    ResponseEntity<Resource> exportarClientePdf(Long idCliente);
 
+    ResponseEntity<Resource> exportarClientePdf2(Long idCliente);
 }
