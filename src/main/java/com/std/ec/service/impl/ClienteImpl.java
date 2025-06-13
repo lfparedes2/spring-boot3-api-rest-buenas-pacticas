@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -116,13 +117,15 @@ public class ClienteImpl implements ICliente {
     public ResponseEntity<Resource> exportarClientePdf2(Long idCliente) {
         try {
             final File file = ResourceUtils.getFile("classpath:report_spring.jasper");
+            File imgLogo = ResourceUtils.getFile("classpath:qr_local.PNG");
             final JasperReport report = (JasperReport) JRLoader.loadObject(file);
 
             // Parámetros que se pasan al reporte
             final HashMap<String, Object> parameters = new HashMap<>();
             parameters.put("ID_CLIENTE", idCliente); // asegúrate de que el .jasper reciba este parámetro
-            parameters.put("EMAIL_CLIENTE" ,"Email 1");
+            parameters.put("EMAIL_CLIENTE", "Email 1");
             parameters.put("NOMBRE_CLIENTE", "Cliente 1");
+            parameters.put("IMG_LOGO", new FileInputStream(imgLogo));
             // Obtiene la conexión desde el DataSource
             try (Connection conn = dataSource.getConnection()) {
                 JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, conn);
