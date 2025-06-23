@@ -7,9 +7,13 @@ import com.std.ec.service.ICliente;
 import jakarta.validation.constraints.NotNull;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -144,6 +148,11 @@ public class ClienteImpl implements ICliente {
         } catch (Exception e) {
             throw new RuntimeException("Error al generar el PDF", e);
         }
+    }
+
+    public Page<Cliente> obtenerClientesPaginados(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return clienteDao.findAll(pageable);
     }
 
 }

@@ -4,6 +4,7 @@ import com.std.ec.model.dto.ClienteDto;
 import com.std.ec.model.entity.Cliente;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,4 +26,6 @@ public interface ICliente {
     ResponseEntity<Resource> exportarClientePdf(Long idCliente);
 
     ResponseEntity<Resource> exportarClientePdf2(Long idCliente);
+
+    public Page<Cliente> obtenerClientesPaginados(int page, int size);
 }

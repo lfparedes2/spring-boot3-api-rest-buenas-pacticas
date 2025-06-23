@@ -1,7 +1,9 @@
 package com.std.ec.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,6 +15,7 @@ import java.util.Date;
 @Entity
 @Builder
 @Table(name = "clientes")
+@Audited
 public class Cliente implements Serializable {
 
     @Id

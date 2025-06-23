@@ -4,10 +4,14 @@ import com.std.ec.model.dto.ClienteDto;
 import com.std.ec.model.entity.Cliente;
 import com.std.ec.model.payload.MensajeResponse;
 import com.std.ec.service.ICliente;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -15,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/v1")
 public class ClienteController {
 
@@ -23,6 +29,23 @@ public class ClienteController {
     public ClienteController(ICliente clienteService) {
         this.clienteService = clienteService;
     }
+
+
+    @GetMapping("/paginado")
+    public ResponseEntity<?> obtenerClientesPaginados(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size, PagedResourcesAssembler<Cliente> assembler) {
+       Page<Cliente> clientes = clienteService.obtenerClientesPaginados(page, size);
+        if (clientes.isEmpty()) {
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje("No existe registros")
+                    .object(null)
+                    .build(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(MensajeResponse.builder()
+                .mensaje("OK")
+                .object(assembler.toModel(clientes))
+                .build(), HttpStatus.OK);
+    }
+
 
     @GetMapping("/clientes")
     @ResponseStatus(HttpStatus.OK)
@@ -43,8 +66,20 @@ public class ClienteController {
 
     @PostMapping("/cliente")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> create(@RequestBody ClienteDto clienteDto) {
+    public ResponseEntity<?> create(@Valid @RequestBody ClienteDto clienteDto, BindingResult result) {
         Cliente clienteSave = null;
+        if (result.hasErrors()) {
+            Map<String, String> errores = new HashMap<>();
+            result.getFieldErrors().forEach(error ->
+                    errores.put(error.getField(), error.getDefaultMessage())
+            );
+
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje("Error de validación")
+                    .object(errores)
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
+
         try {
             clienteSave = clienteService.save(clienteDto);
             clienteDto =ClienteDto.builder()
@@ -146,10 +181,6 @@ public class ClienteController {
     }
 
     //exportar pdf
-    /*@GetMapping("/cliente/exportpdf/{id}")
-    public ResponseEntity<Resource> exporClentetPdf(@RequestParam Long idCliente) {
-        return (ResponseEntity<Resource>) clienteService.exportarClientePdf(idCliente);
-    }*/
 
     @GetMapping("/cliente/exportpdf/{id}")
     public ResponseEntity<Resource> exporClentetPdf(@PathVariable Long id) {
